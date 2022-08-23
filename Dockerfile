@@ -1,14 +1,19 @@
-FROM nginx:1.13.3-alpine
+# Stage 1
+FROM node:8.11.2-alpine as node
 
-## Copy our nginx config
-COPY nginx/ /etc/nginx/conf.d/
+WORKDIR /usr/src/app
 
-## Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
+COPY package*.json ./
 
-## copy over the artifacts in dist folder to default nginx public folder
-COPY dist/ /usr/share/nginx/html
+RUN npm install
 
-EXPOSE 8080
+COPY . .
 
-CMD ["nginx", "-g", "daemon off;"]
+RUN npm run build
+
+# Stage 2
+FROM nginx:1.13.12-alpine
+
+COPY --from=node /usr/src/app/dist/angular-docker /usr/share/nginx/html
+
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
