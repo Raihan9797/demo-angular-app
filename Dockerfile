@@ -1,6 +1,5 @@
-# working on docker
 FROM nginx:latest
 
-COPY dist/challengelima_frontend/ /usr/share/nginx/html/
+COPY dist/demo-app/ /usr/share/nginx/html/
 
 EXPOSE 80
